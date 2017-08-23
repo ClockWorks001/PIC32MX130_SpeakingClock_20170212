@@ -1,0 +1,90 @@
+﻿0000	/TimeWord/H_00.wav	
+		
+0630	/TimeWord/H_06.wav	/TimeWord/M_30.wav
+0645	/TimeWord/H_06.wav	/TimeWord/M_45.wav
+			
+0700	/TimeWord/H_07.wav	
+0715	/TimeWord/H_07.wav	/TimeWord/M_15.wav
+0730	/TimeWord/H_07.wav	/TimeWord/M_30.wav
+0745	/TimeWord/H_07.wav	/TimeWord/M_45.wav
+			
+0800	/TimeWord/H_08.wav	
+0815	/TimeWord/H_08.wav	/TimeWord/M_15.wav
+0830	/TimeWord/H_08.wav	/TimeWord/M_30.wav
+0845	/TimeWord/H_08.wav	/TimeWord/M_45.wav
+			
+0900	/TimeWord/H_09.wav	
+0915	/TimeWord/H_09.wav	/TimeWord/M_15.wav
+0930	/TimeWord/H_09.wav	/TimeWord/M_30.wav
+0945	/TimeWord/H_09.wav	/TimeWord/M_45.wav
+			
+1000	/TimeWord/H_10.wav	
+1015	/TimeWord/H_10.wav	/TimeWord/M_15.wav
+1030	/TimeWord/H_10.wav	/TimeWord/M_30.wav
+1045	/TimeWord/H_10.wav	/TimeWord/M_45.wav
+			
+1100	/TimeWord/H_11.wav	
+1115	/TimeWord/H_11.wav	/TimeWord/M_15.wav
+1130	/TimeWord/H_11.wav	/TimeWord/M_30.wav
+1145	/TimeWord/H_11.wav	/TimeWord/M_45.wav
+			
+1200	/TimeWord/H_12.wav	
+1215	/TimeWord/H_12.wav	/TimeWord/M_15.wav
+1230	/TimeWord/H_12.wav	/TimeWord/M_30.wav
+1245	/TimeWord/H_12.wav	/TimeWord/M_45.wav
+			
+1300	/TimeWord/H_13.wav	
+1315	/TimeWord/H_13.wav	/TimeWord/M_15.wav
+1330	/TimeWord/H_13.wav	/TimeWord/M_30.wav
+1345	/TimeWord/H_13.wav	/TimeWord/M_45.wav
+			
+1400	/TimeWord/H_14.wav	
+1415	/TimeWord/H_14.wav	/TimeWord/M_15.wav
+1430	/TimeWord/H_14.wav	/TimeWord/M_30.wav
+1445	/TimeWord/H_14.wav	/TimeWord/M_45.wav
+			
+1500	/TimeWord/H_15.wav	
+1515	/TimeWord/H_15.wav	/TimeWord/M_15.wav
+1530	/TimeWord/H_15.wav	/TimeWord/M_30.wav
+1545	/TimeWord/H_15.wav	/TimeWord/M_45.wav
+			
+1600	/TimeWord/H_16.wav	
+1615	/TimeWord/H_16.wav	/TimeWord/M_15.wav
+1630	/TimeWord/H_16.wav	/TimeWord/M_30.wav
+1645	/TimeWord/H_16.wav	/TimeWord/M_45.wav
+			
+1700	/TimeWord/H_17.wav	
+1715	/TimeWord/H_17.wav	/TimeWord/M_15.wav
+1730	/TimeWord/H_17.wav	/TimeWord/M_30.wav
+1745	/TimeWord/H_17.wav	/TimeWord/M_45.wav
+			
+1800	/TimeWord/H_18.wav	
+1815	/TimeWord/H_18.wav	/TimeWord/M_15.wav
+1830	/TimeWord/H_18.wav	/TimeWord/M_30.wav
+1845	/TimeWord/H_18.wav	/TimeWord/M_45.wav
+			
+1900	/TimeWord/H_19.wav	
+1915	/TimeWord/H_19.wav	/TimeWord/M_15.wav
+1930	/TimeWord/H_19.wav	/TimeWord/M_30.wav
+1945	/TimeWord/H_19.wav	/TimeWord/M_45.wav
+			
+2000	/TimeWord/H_20.wav	
+2015	/TimeWord/H_20.wav	/TimeWord/M_15.wav
+2030	/TimeWord/H_20.wav	/TimeWord/M_30.wav
+2045	/TimeWord/H_20.wav	/TimeWord/M_45.wav
+			
+2100	/TimeWord/H_21.wav	
+2115	/TimeWord/H_21.wav	/TimeWord/M_15.wav
+2130	/TimeWord/H_21.wav	/TimeWord/M_30.wav
+2145	/TimeWord/H_21.wav	/TimeWord/M_45.wav
+			
+2200	/TimeWord/H_22.wav	
+2215	/TimeWord/H_22.wav	/TimeWord/M_15.wav
+2230	/TimeWord/H_22.wav	/TimeWord/M_30.wav
+2245	/TimeWord/H_22.wav	/TimeWord/M_45.wav
+			
+2300	/TimeWord/H_23.wav	
+2315	/TimeWord/H_23.wav	/TimeWord/M_15.wav
+2330	/TimeWord/H_23.wav	/TimeWord/M_30.wav
+2345	/TimeWord/H_23.wav	/TimeWord/M_45.wav
+			

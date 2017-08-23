@@ -1,0 +1,90 @@
+﻿0000	/Effect01/na1_001.wav	/TimeWord/H_00.wav	
+		
+0630	/Effect01/na1_001.wav	/TimeWord/H_06.wav	/TimeWord/M_30.wav
+0645	/Effect01/na1_001.wav	/TimeWord/H_06.wav	/TimeWord/M_45.wav
+			
+0700	/Effect01/na1_001.wav	/TimeWord/H_07.wav	
+0715	/Effect01/na1_001.wav	/TimeWord/H_07.wav	/TimeWord/M_15.wav
+0730	/Effect01/na1_001.wav	/TimeWord/H_07.wav	/TimeWord/M_30.wav
+0745	/Effect01/na1_001.wav	/TimeWord/H_07.wav	/TimeWord/M_45.wav
+			
+0800	/Effect01/na1_001.wav	/TimeWord/H_08.wav	
+0815	/Effect01/na1_001.wav	/TimeWord/H_08.wav	/TimeWord/M_15.wav
+0830	/Effect01/na1_001.wav	/TimeWord/H_08.wav	/TimeWord/M_30.wav
+0845	/Effect01/na1_001.wav	/TimeWord/H_08.wav	/TimeWord/M_45.wav
+			
+0900	/Effect01/na1_001.wav	/TimeWord/H_09.wav	
+0915	/Effect01/na1_001.wav	/TimeWord/H_09.wav	/TimeWord/M_15.wav
+0930	/Effect01/na1_001.wav	/TimeWord/H_09.wav	/TimeWord/M_30.wav
+0945	/Effect01/na1_001.wav	/TimeWord/H_09.wav	/TimeWord/M_45.wav
+			
+1000	/Effect01/na1_001.wav	/TimeWord/H_10.wav	
+1015	/Effect01/na1_001.wav	/TimeWord/H_10.wav	/TimeWord/M_15.wav
+1030	/Effect01/na1_001.wav	/TimeWord/H_10.wav	/TimeWord/M_30.wav
+1045	/Effect01/na1_001.wav	/TimeWord/H_10.wav	/TimeWord/M_45.wav
+			
+1100	/Effect01/na1_001.wav	/TimeWord/H_11.wav	
+1115	/Effect01/na1_001.wav	/TimeWord/H_11.wav	/TimeWord/M_15.wav
+1130	/Effect01/na1_001.wav	/TimeWord/H_11.wav	/TimeWord/M_30.wav
+1145	/Effect01/na1_001.wav	/TimeWord/H_11.wav	/TimeWord/M_45.wav
+			
+1200	/Effect01/na1_001.wav	/TimeWord/H_12.wav	
+1215	/Effect01/na1_001.wav	/TimeWord/H_12.wav	/TimeWord/M_15.wav
+1230	/Effect01/na1_001.wav	/TimeWord/H_12.wav	/TimeWord/M_30.wav
+1245	/Effect01/na1_001.wav	/TimeWord/H_12.wav	/TimeWord/M_45.wav
+			
+1300	/Effect01/na1_001.wav	/TimeWord/H_13.wav	
+1315	/Effect01/na1_001.wav	/TimeWord/H_13.wav	/TimeWord/M_15.wav
+1330	/Effect01/na1_001.wav	/TimeWord/H_13.wav	/TimeWord/M_30.wav
+1345	/Effect01/na1_001.wav	/TimeWord/H_13.wav	/TimeWord/M_45.wav
+			
+1400	/Effect01/na1_001.wav	/TimeWord/H_14.wav	
+1415	/Effect01/na1_001.wav	/TimeWord/H_14.wav	/TimeWord/M_15.wav
+1430	/Effect01/na1_001.wav	/TimeWord/H_14.wav	/TimeWord/M_30.wav
+1445	/Effect01/na1_001.wav	/TimeWord/H_14.wav	/TimeWord/M_45.wav
+			
+1500	/Effect01/na1_001.wav	/TimeWord/H_15.wav	
+1515	/Effect01/na1_001.wav	/TimeWord/H_15.wav	/TimeWord/M_15.wav
+1530	/Effect01/na1_001.wav	/TimeWord/H_15.wav	/TimeWord/M_30.wav
+1545	/Effect01/na1_001.wav	/TimeWord/H_15.wav	/TimeWord/M_45.wav
+			
+1600	/Effect01/na1_001.wav	/TimeWord/H_16.wav	
+1615	/Effect01/na1_001.wav	/TimeWord/H_16.wav	/TimeWord/M_15.wav
+1630	/Effect01/na1_001.wav	/TimeWord/H_16.wav	/TimeWord/M_30.wav
+1645	/Effect01/na1_001.wav	/TimeWord/H_16.wav	/TimeWord/M_45.wav
+			
+1700	/Effect01/na1_001.wav	/TimeWord/H_17.wav	
+1715	/Effect01/na1_001.wav	/TimeWord/H_17.wav	/TimeWord/M_15.wav
+1730	/Effect01/na1_001.wav	/TimeWord/H_17.wav	/TimeWord/M_30.wav
+1745	/Effect01/na1_001.wav	/TimeWord/H_17.wav	/TimeWord/M_45.wav
+			
+1800	/Effect01/na1_001.wav	/TimeWord/H_18.wav	
+1815	/Effect01/na1_001.wav	/TimeWord/H_18.wav	/TimeWord/M_15.wav
+1830	/Effect01/na1_001.wav	/TimeWord/H_18.wav	/TimeWord/M_30.wav
+1845	/Effect01/na1_001.wav	/TimeWord/H_18.wav	/TimeWord/M_45.wav
+			
+1900	/Effect01/na1_001.wav	/TimeWord/H_19.wav	
+1915	/Effect01/na1_001.wav	/TimeWord/H_19.wav	/TimeWord/M_15.wav
+1930	/Effect01/na1_001.wav	/TimeWord/H_19.wav	/TimeWord/M_30.wav
+1945	/Effect01/na1_001.wav	/TimeWord/H_19.wav	/TimeWord/M_45.wav
+			
+2000	/Effect01/na1_001.wav	/TimeWord/H_20.wav	
+2015	/Effect01/na1_001.wav	/TimeWord/H_20.wav	/TimeWord/M_15.wav
+2030	/Effect01/na1_001.wav	/TimeWord/H_20.wav	/TimeWord/M_30.wav
+2045	/Effect01/na1_001.wav	/TimeWord/H_20.wav	/TimeWord/M_45.wav
+			
+2100	/Effect01/na1_001.wav	/TimeWord/H_21.wav	
+2115	/Effect01/na1_001.wav	/TimeWord/H_21.wav	/TimeWord/M_15.wav
+2130	/Effect01/na1_001.wav	/TimeWord/H_21.wav	/TimeWord/M_30.wav
+2145	/Effect01/na1_001.wav	/TimeWord/H_21.wav	/TimeWord/M_45.wav
+			
+2200	/Effect01/na1_001.wav	/TimeWord/H_22.wav	
+2215	/Effect01/na1_001.wav	/TimeWord/H_22.wav	/TimeWord/M_15.wav
+2230	/Effect01/na1_001.wav	/TimeWord/H_22.wav	/TimeWord/M_30.wav
+2245	/Effect01/na1_001.wav	/TimeWord/H_22.wav	/TimeWord/M_45.wav
+			
+2300	/Effect01/na1_001.wav	/TimeWord/H_23.wav	
+2315	/Effect01/na1_001.wav	/TimeWord/H_23.wav	/TimeWord/M_15.wav
+2330	/Effect01/na1_001.wav	/TimeWord/H_23.wav	/TimeWord/M_30.wav
+2345	/Effect01/na1_001.wav	/TimeWord/H_23.wav	/TimeWord/M_45.wav
+			
