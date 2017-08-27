@@ -2,7 +2,7 @@
 ---
 ## Description
 
-This is a Speaking Clock project with [PIC32MX130 micro controller][2] with [MPLAB.X][3] [MCC][4].
+This is a Speaking Clock project with [PIC32MX130 micro controller][2] & [MPLAB.X][3] [MCC][4].
 I have created this project using Mr.ChaN's wonderful FatFs program. 
 You can operat it by terminal with serial communication speed of 115,200 bps.
 
