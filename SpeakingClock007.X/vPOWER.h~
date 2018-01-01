@@ -1,0 +1,39 @@
+/*******************************************************************************
+ *	POWER save
+ *	author  :hiroshi murakami
+ *	created :20161225
+ *	modified:-
+ ******************************************************************************/
+#ifndef _vPOWER_H
+#define _vPOWER_H
+
+#include "mcc_generated_files/mcc.h"
+#include "integer.h"
+
+/*****************************
+ * VARIABLES
+ *****************************/
+
+#if defined _vPOWER_C
+	//char cFlag1Minute;
+
+
+#else
+	//extern char cFlag1Minute;
+
+#endif
+
+/*****************************
+ * PROTOTYPES
+ *****************************/
+void vPowerSave(void);
+void vPORTchangeNoticeSet(void);
+
+
+#define vClearEventWDT() RCONbits.WDTO =0
+#define vClearWDT()		WDTCONbits.WDTCLR = 1 
+#define vEnableWDT()	WDTCONbits.ON = 1 
+#define vDisableWDT()	WDTCONbits.ON = 0  
+
+#endif
+

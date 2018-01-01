@@ -1,0 +1,179 @@
+/*******************************************************************************
+ *	  RTCC処理
+ *	  author  :hiroshi murakami
+ *	  created :20161225
+ *	  modified:-
+ ******************************************************************************/
+#define _vRTCC_C
+
+#include <string.h>
+#include "xprintf.h"
+#include "vRTCC.h"
+#include "vWAVE.h"
+
+/*****************************
+ * VARIABLES
+ *****************************/
+
+
+//******************************************************************************
+/*----------------------------------------------------------*/
+/* User Provided RTC Function for FatFs module				*/
+/*----------------------------------------------------------*/
+/* This is a real time clock service to be called from		*/
+/* FatFs module. Any valid time must be returned even if	*/
+/* the system does not support an RTC.						*/
+/* This function is not required in read-only cfg.			*/
+//******************************************************************************
+DWORD get_fattime (void)
+{
+//	struct tm currentTime;
+	DWORD tmr;
+
+	RTCC_TimeGet(&currentTime);
+	tmr =	(((DWORD)currentTime.tm_year + 2000 - 1980) << 25)
+		 | ((DWORD)currentTime.tm_mon << 21)
+		 | ((DWORD)currentTime.tm_mday << 16)
+		 | (WORD)(currentTime.tm_hour << 11)
+		 | (WORD)(currentTime.tm_min << 5)
+		 | (WORD)(currentTime.tm_sec >> 1);
+
+	return tmr;
+}
+
+//******************************************************************************
+//	initialize RTCC property
+//
+//	Description	: -
+//	Input		: -
+//	Output		:
+//******************************************************************************
+void vRTCC_init(void)
+{
+   	cFlagAlarmON = vFLAG_OFF;		//0:off 1:on
+	cFlagChimeON = vFLAG_OFF;		//0:off 1:on
+	cFlagNightSenseON = vFLAG_OFF;	//0:off 1:on
+	cFlagIsItNight = vFLAG_OFF;		//0:daylight 1:Night
+}
+
+//******************************************************************************
+//	Interrupt RTCC (call from MCC RTCC interrupt call back routine )
+//
+//	Description	: -
+//	Input		: -
+//	Output		:
+//******************************************************************************
+void Interrupt_RTCC(void)
+{
+   	cFlag1Minute++;
+}
+
+//******************************************************************************
+//	when 1 minute go through, this function checks time then speaking timel.
+//
+//	Description	: It needs Interrupt RTCC which repeate evry 1 minute.
+//	Input		: -
+//	Output		:
+//******************************************************************************
+void vRTCC_TimeCheck(void)
+{
+   	if(!(cFlag1Minute)){
+		return;
+	}
+   	cFlag1Minute = 0 ;
+	
+	RTCC_TimeGet(&currentTime);
+	xsprintf(bCurrentHHMM, "%02d%02d", currentTime.tm_hour, currentTime.tm_min);
+	
+	////////////////////////////////////////////////////////////////////////////
+	//	speaking current time checking
+	////////////////////////////////////////////////////////////////////////////
+	if(
+		(strcmp(bNextHHMM, "0000") < 0) || 
+		(strcmp(bNextHHMM, "2359") > 0) ||
+		(	(strcmp(bPreviousHHMM, bNextHHMM) < 0) && 
+			!((strcmp(bPreviousHHMM, bCurrentHHMM) <= 0) && (strcmp(bCurrentHHMM, bNextHHMM) <= 0))
+		)   ||
+		(	(strcmp(bPreviousHHMM, bNextHHMM) > 0) && 
+			((strcmp(bNextHHMM, bCurrentHHMM) < 0) && (strcmp(bCurrentHHMM, bPreviousHHMM) < 0))
+		)
+	){
+		strcpy(bPreviousHHMM, bCurrentHHMM);
+		strcpy(bNextHHMM, bCurrentHHMM);
+		pbFFF_get_nextTime(bNextHHMM, bChimeFile);
+	}
+	
+	if(strcmp(bCurrentHHMM, bNextHHMM) == 0){
+		if(	(cFlagChimeON == vFLAG_ON) &&
+			(	(cFlagNightSenseON == vFLAG_OFF) ||
+				((cFlagNightSenseON == vFLAG_ON) && cFlagIsItNight == 0)	//0:daylight 1:Night
+			)
+		)	{
+			vWAVE_words12_open(bCurrentHHMM, bChimeFile);
+		}
+		strcpy(bPreviousHHMM, bCurrentHHMM);
+		pbFFF_get_nextTime(bNextHHMM, bChimeFile);
+		xprintf("nextTime is %s\n", bNextHHMM);
+		//check the music status.
+		if(waveMusic13.status != eWaveM13_idle )waveMusic13.status = eWaveM13_playNumberOfFiles;
+	}
+}
+
+//******************************************************************************
+//	alarm time checking
+//
+//	Description	: -
+//	Input		: -
+//	Output		:
+//******************************************************************************
+void vRTCC_AlarmCheck(void)
+{
+	switch(AlarmTask11.status){
+	case eAlarmT11_inactive:
+		return;
+		break;
+	
+	case eAlarmT11_active:
+		if(strcmp(bCurrentHHMM, alarmTask11.bAlarmHHMM) == 0){
+			alarmtask11.cAlarmRepeatCountdown = alarmtask11.cAlarmRepeat;
+			AlarmTask11.status++;
+		}
+		break;
+
+	case eAlarmT11_open:
+		alarmtask11.cAlarmRepeatCountdown--;
+		vWAVE_words12_open(bCurrentHHMM, bAlarmFile);
+		AlarmTask11.status++;
+		break;
+
+	case eAlarmT11_beeping:
+		if(waveMusic13.status != eWaveM13_idle ) break;
+		AlarmTask11.status++;
+		break;
+
+	case eAlarmT11_end:
+		if(alarmTask11.cAlarmRepeatCountdown == 0){
+			alarmTask11.status == eAlarmT11_active;
+		} else {
+			alarmTask11.status = eAlarmT11_open;
+		}
+		break;
+
+	default:
+		break;
+	}
+
+	if(cFlagAlarmON == vFLAG_ON) {
+		return;
+	}
+		if(strcmp(bCurrentHHMM, alarmTask11.bAlarmHHMM) == 0){
+//			vWAVE_words12_open(bCurrentHHMM, bAlarmFile);
+			cAlarmRepeat = alarmTime.tm_sec;
+		}
+		if(cAlarmRepeat > 0 && waveMusic13.status == eWaveM13_idle ){
+			cAlarmRepeat--;
+			vWAVE_words12_open(bCurrentHHMM, bAlarmFile);
+		}
+
+	return;
+}

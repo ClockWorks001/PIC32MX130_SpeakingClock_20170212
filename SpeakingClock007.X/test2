@@ -1,0 +1,22 @@
+		case 'a' :	// wa <No> <path> play No. of file in a path.
+			while(*ptr == ' ') ptr++;					// skip space
+			if (!xatoi(&ptr, &i)) break;				// get file No
+			while (*ptr == ' ') ptr++;					// skip space
+			fnm = pbFFF_get_fileName(ptr, "wav", i);	// ptr = path / i = file No
+			xprintf("File name is %d %s\n", i, fnm);
+
+			ptr2 = &textbuff[0];						// set in textbuff with path
+			for(ptr = ptr ; *ptr != '\0' && *ptr != ' ' ; ptr++ ) {	// ptr = path
+				*ptr2 = *ptr;							// fill in textbuff by path
+				ptr2++;
+			}
+			*ptr2++ = '/';
+			ptr = fnm;									// add file name
+			for(ptr = ptr ; *ptr != '\0' && *ptr != ' ' ; ptr++ ) {
+				*ptr2 = *ptr;
+				ptr2++;
+			}
+
+			vWAVE_task11_start(&textbuff[0]);
+			break;
+

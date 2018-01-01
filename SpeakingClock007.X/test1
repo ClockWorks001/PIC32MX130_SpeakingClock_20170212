@@ -1,0 +1,22 @@
+		case 'b' :	// wb <Time> <file> - search a file and get a Time line then Speaking
+			while(*ptr == ' ') ptr++;						// skip space
+			ptr2 = ptr;										// get <word>
+			while((*ptr2 != ' ' && *ptr2 != '\0' )) ptr2++;	// skip <word>
+			while(*ptr2 == ' ') ptr2++;						// skip space and get file name
+			rFFF_open(ptr2, SD_FILE_0);
+			while(iFFF_remains(SD_FILE_0)) {
+				rFFF_BlockRead(SD_FILE_0);
+				pbFFF_text_getline(&textbuff[0], sizeof(textbuff), SD_FILE_0);
+				iRtnMatch = iFFF_match_words(ptr, &textbuff[0]);
+				if(iRtnMatch) {
+					xprintf("Get!! file names = %s\n", textbuff);
+					break;
+				}
+			}
+			if(!(iRtnMatch)) {
+				xputs("Not Found!!\n");
+				break;
+			}
+			vWAVE_task11_start(&textbuff[iRtnMatch]);
+			break;
+

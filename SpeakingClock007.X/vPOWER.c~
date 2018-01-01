@@ -1,0 +1,51 @@
+/*******************************************************************************
+ *	POWER save
+ *	author  :hiroshi murakami
+ *	created :20161225
+ *	modified:-
+ ******************************************************************************/
+#define _vPOWER_C
+
+#include "mcc_generated_files/mcc.h"
+#include "vPOWER.h"
+
+//******************************************************************************
+//	Function Name :POWER save
+//	Outline		:POWER save
+//	Input		:
+//	Output		:
+//******************************************************************************
+void vPowerSave(void)
+{
+//        CloseTimer4();				//stop SD card reading
+//		AUDIO_DISEN();
+//		SD_POWER_DISEN();
+
+	TMR1_Stop();
+	TMR3_Stop();
+	vDisableWDT();
+
+//	PowerSaveSleep();
+	OSCCONbits.SLPEN = 1;
+	_wait();
+
+	vEnableWDT();
+	TMR1_Start();
+
+}
+
+//******************************************************************************
+//	Function Name :input 
+//	Outline		:POWER save
+//	Input		:
+//	Output		:
+//******************************************************************************
+void vPORTchangeNoticeSet(void)
+{
+	int temp;
+	//CNCONAbits.ON = 1;
+	//CNCONBbits.ON = 1;
+	temp = PORTA;
+	temp = PORTB;
+	
+}

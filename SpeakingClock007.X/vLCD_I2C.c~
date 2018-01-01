@@ -1,0 +1,305 @@
+/*******************************************************************************
+ *	I2C LCD charactor display task
+ *	I2C1 use
+ *	author  :hiroshi murakami
+ *	created :20170305
+ *	modified:-
+ ******************************************************************************/
+#define _vLCD_I2C_C
+
+#include "xprintf.h"
+#include "vLCD_I2C.h"
+#include "vTMR1.h"
+
+//******************************************************************************
+//	LCD command task open. LCD task open. 
+//
+//	Description	:
+//	 1.initialize FIFO buffer.
+//	 2.status initialize.
+//	Precondition:
+//	Input		: 
+//	Parameters	: 
+//	Returns		:
+//******************************************************************************
+void vLCD_task11_open(void)
+{
+	vFIFO_init(&LcdTask11.fifo, sizeof(LcdTask11.buff), LcdTask11.buff);
+	LcdTask11.status = eLcdT11_idle;
+	LcdTask11.pstatus = I2C1_MESSAGE_COMPLETE;
+}
+
+//******************************************************************************
+//	LCD command & data output then wait command done. LCD task control. 
+//
+//	Description	:
+//	 1.LCD BUFFER data format = 2 byte (command, data )
+//	 2.command (0x00:command, 0x40:data, 0xFF:wait *0xFF is special command for this object )
+//	 3.wait until command done.
+//	 4.next command.
+//	Precondition: open task11 
+//	Input		: Fifo buffer
+//	Parameters	: 
+//	Returns		:
+//******************************************************************************
+void vLCD_task11_control(void)
+{
+
+	switch (LcdTask11.status) {
+	case	eLcdT11_idle:					// 1.waiting to get file names(with path).
+		if(iFIFO_remains(&LcdTask11.fifo)) {
+			LcdTask11.status++;
+		}
+		break;
+
+	case	eLcdT11_LcdCommandPut:			// 2.get command & data.
+		if(LcdTask11.pstatus == I2C1_MESSAGE_COMPLETE){
+
+			LcdTask11.data[0] = bFIFO_getc(&LcdTask11.fifo);
+			LcdTask11.data[1] = bFIFO_getc(&LcdTask11.fifo);
+			if(LcdTask11.data[0] == 0x00 || LcdTask11.data[0] == 0x40){
+				I2C1_MasterWrite(
+					LcdTask11.data,
+					2,
+					LCD_ADDRESS,
+					&LcdTask11.pstatus
+				);	
+			}else{
+				uiTMR006 = (unsigned int)LcdTask11.data[1];	//wait msec set
+				LcdTask11.status++;					//to next status
+			}
+		}else if(LcdTask11.pstatus == I2C1_MESSAGE_FAIL) {
+			LcdTask11.status = eLcdT11_fail;
+		}
+		break;
+
+	case	eLcdT11_busy:						//wait until idle.
+		if(IS_uiTMR006_FINISH){
+			LcdTask11.status++;					//to next status
+		}
+		break;
+
+	case	eLcdT11_nextCommand :
+		if(iFIFO_remains(&LcdTask11.fifo)) {
+			LcdTask11.status = eLcdT11_LcdCommandPut;
+			break;
+		}
+		LcdTask11.status = eLcdT11_end;
+		break;
+		
+	case	eLcdT11_end :
+		LcdTask11.status = eLcdT11_idle;
+		break;
+
+	case	eLcdT11_fail :
+		vLCD_task11_open();
+		LcdTask11.status = eLcdT11_end;
+		break;
+
+	default:
+		LcdTask11.status = eLcdT11_end;
+		break;
+	}
+
+}
+
+//******************************************************************************
+// "wait" msec into I2C FIFO buffer.
+//******************************************************************************
+void vLCD_wait(
+	BYTE wait
+)
+{
+	iFIFO_putc(&LcdTask11.fifo, LCDWAIT);	// LCDWAIT is waiting command for task11
+	iFIFO_putc(&LcdTask11.fifo, wait);
+}
+
+//******************************************************************************
+// output 1 character to I2C FIFO buffer.
+//******************************************************************************
+void vLCD_data(
+	BYTE data
+)
+{
+	iFIFO_putc(&LcdTask11.fifo, LCDDATA);
+	iFIFO_putc(&LcdTask11.fifo, data);
+	vLCD_wait(1);
+}
+
+//******************************************************************************
+// output 1 command data to I2C FIFO buffer.
+//******************************************************************************
+void vLCD_cmd(
+	unsigned char cmd
+)
+{
+	iFIFO_putc(&LcdTask11.fifo, LCDCMD);
+	iFIFO_putc(&LcdTask11.fifo, cmd);
+	// Clear or Home
+    if((cmd == 0x01)||(cmd == 0x02)){
+		vLCD_wait(2);				// wait 2msec
+    } else {
+		vLCD_wait(1);				// wait 30usec though 0msec
+    }
+}
+
+//******************************************************************************
+// initialize LCD command.
+//******************************************************************************
+void vLCD_init(void)
+{
+    vLCD_wait(100);
+    vLCD_cmd(0x38);              // 8bit 2line Normal mode
+    vLCD_cmd(0x39);              // 8bit 2line Extend mode
+    vLCD_cmd(0x14);              // BIAS 1/5 CLK 380Khz
+    /* コントラスト設定 */
+    vLCD_cmd(0x70 + (CONTRAST & 0x0F));
+    vLCD_cmd(0x5C + (CONTRAST >> 4));
+//  vLCD_cmd(0x6A);              // Follower for 5.0V
+	vLCD_cmd(0x6B);              // Follower for 3.3V
+    vLCD_wait(100);
+    vLCD_cmd(0x38);              // Set Normal mode
+    vLCD_cmd(0x0C);              // Display On
+    vLCD_cmd(0x01);              // Clear Display
+}
+
+//******************************************************************************
+// clear LCD display.
+//******************************************************************************
+void vLCD_clear(void)
+{
+    vLCD_cmd(0x01);              
+}
+
+//******************************************************************************
+// move cursor position on LCD display.
+// ucLine 	: 0 -> Line 1
+// 			: 1 -> Line 2
+// ucColumn	: 0 -> column 1
+//******************************************************************************
+void vLCD_printAt(
+	unsigned char ucLine, 
+	unsigned char ucColumn
+)
+{
+	switch (ucLine) {
+	case  	0 :					// Line 1
+	    vLCD_cmd(0b10000000 | (0x00 + ucColumn)); // add Column position
+		break;
+	default:					// Line 2
+	    vLCD_cmd(0b10000000 | (0x40 + ucColumn)); // add Column position
+	}
+}
+
+//******************************************************************************
+// output string to LCD.
+//******************************************************************************
+void vLCD_str(
+	const unsigned char *ptr
+)
+{
+	int i;
+	i = 0;
+    while(*ptr && i < LCD_LINE_SIZE){        		
+        vLCD_data(*ptr++);				// LCD data output byte by byte.
+		i++;
+    }
+}
+
+//******************************************************************************
+// icons dislpay 
+//******************************************************************************
+void vLCD_icon(
+	unsigned char num, 
+	unsigned char onoff
+)
+{
+    vLCD_cmd(0x39);              // Extend mode
+    vLCD_cmd(0x40 | ICON[num][0]);   // アイコンアドレス指定
+    if(onoff){
+        vLCD_data(ICON[num][1]); // アイコンオンデータ
+    }else{
+        vLCD_data(0x00);         // アイコンオフデータ
+    }
+    vLCD_cmd(0x38);              // Normal Mode
+}
+
+
+//******************************************************************************
+// blink ON
+//******************************************************************************
+void vLCD_blinkON(void)
+{
+    //vLCD_cmd(0b00001111);		//d:1 display on c:1 cursor on b:1 blink on
+    vLCD_cmd(0x0F);			//d:1 display on c:1 cursor on b:1 blink on
+}
+
+//******************************************************************************
+// blink OFF
+//******************************************************************************
+void vLCD_blinkOFF(void)
+{
+    //vLCD_cmd(0b00001100);		//d:1 display on c:1 cursor on b:1 blink on
+    vLCD_cmd(0x0C);				//d:1 display on c:1 cursor on b:1 blink on
+}
+
+//******************************************************************************
+// initialize LCD_LINE_PROPERTY
+//******************************************************************************
+void vLCD_LINES_init(void)
+{
+	int i;
+	LL1.iLine = 1;
+	LL1.iShiftBytes = 0;
+	for( i = 0 ; i < LCD_LINE_BUFFER_SIZE ; i++) LL1.bLineBuffer[i] = '\n';
+	LL2.iLine = 2;
+	LL2.iShiftBytes = 0;
+	for( i = 0 ; i < LCD_LINE_BUFFER_SIZE ; i++) LL2.bLineBuffer[i] = '\n';
+}
+
+//******************************************************************************
+//	output a line data to LCD. this Function is for scrolling lines.
+//
+//	Description	:
+//	 1.output a line data to LCD.
+//	 2.output position is "iLine" line and "0" column.
+//	 3."iShiftBytes" shift a line data.
+//	Precondition:
+//	Input		: 
+//	Parameters	:
+//	Returns		: shift bytes. if it's over return "0".
+//******************************************************************************
+int iLcdOutLineWithShift(
+	int iLine, 
+	BYTE* pbLineBuffer, 
+	int iShiftBytes
+)
+{
+	int i, length;
+	BYTE *ptr;
+	
+	length = strlen(pbLineBuffer);
+
+	if(iShiftBytes > 0) {
+		if(length >= LCD_LINE_SIZE) iShiftBytes = 0;
+		if(iShiftBytes >= length) iShiftBytes = 0;
+//		if(iShiftBytes >= LCD_LINE_SIZE) iShiftBytes = 0;
+	}
+	vLCD_printAt(iLine,0);	// move to "iLine" head.
+
+	ptr = pbLineBuffer + iShiftBytes;		// shift line buffer
+	for(i = 0; i < LCD_LINE_SIZE ; i++){
+		if(i >= length){
+			vLCD_data(' ');
+		}else if(*ptr){
+			vLCD_data(*ptr);
+			ptr++;
+		} else {
+			vLCD_data(' ');
+			ptr = pbLineBuffer;
+		}
+	}
+	return iShiftBytes + 1;
+}
+
+

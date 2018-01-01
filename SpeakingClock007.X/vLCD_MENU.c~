@@ -1,0 +1,458 @@
+/*******************************************************************************
+ *	  LCD output menu
+ *	  author  :hiroshi murakami
+ *	  created :20170309
+ *	  modified:-
+ ******************************************************************************/
+#define _vLCD_MENU_C
+
+//#include "mcc_generated_files/mcc.h"
+#include "vTMR1.h"
+#include "vRTCC.h"
+#include "vWAVE.h"
+#include "vSWITCH.h"
+#include "vLCD_MENU.h"
+
+//******************************************************************************
+//	playing some files. WAVE task setup and start playing
+//
+//	Description	:
+//	 1.get file names(with path).
+//	Precondition:
+//	Input		: file names
+//	Parameters	: file names
+//	Returns		:
+//******************************************************************************
+void vLCD_menu12_open(
+)
+{
+	vLCD_lines_init();
+	LcdMenu12.status = eLcdM12_idle;
+	uiTMR007 = 2000; //500msec period
+}
+
+//******************************************************************************
+//	display menu control. LCD menu control. 
+//
+//	Description	:
+//	 1.get file names(with path).
+//	Precondition: open task11 
+//	Input		: 
+//	Parameters	:
+//	Returns		:
+//******************************************************************************
+void vLCD_menu12_control(void)
+{
+	static int i;
+
+	if(IS_uiTMR007_FINISH){
+		uiTMR007 = 250; //msec period
+	} else {
+		return;
+	}
+
+	switch (LcdMenu12.status) {
+	case 	eLcdM12_idle:
+		vLCD_blinkOFF();
+		LcdMenu12.status++;
+		break;
+		
+		case 	eLcdM12_idleNightOff:
+		case	eLcdM12_idleBatteryLow:
+		case	eLcdM12_idleTimeDate:
+		RTCC_TimeGet(&currentTime);
+		xsprintf(LL1.bLineBuffer, "Time %02d:%02d:%02d\n", currentTime.tm_hour, currentTime.tm_min, currentTime.tm_sec);
+		iLCD_scroll_line(&LL1);
+		xsprintf(LL2.bLineBuffer, "Date %02d/%02d/%02d\n", currentTime.tm_year, currentTime.tm_mon, currentTime.tm_mday);
+		iLCD_scroll_line(&LL2);
+		break;
+		
+		case 	eLcdM12_idleNightOffOut:
+		case	eLcdM12_idleBatteryLowOut:
+		case	eLcdM12_idleTimeDateOut:
+			LcdMenu12.status = eLcdM12_menuSelectOpen;
+		break;
+		
+	case	eLcdM12_menuSelectOpen:
+		i = 1;
+		cSW2_ON();		// switch clear
+		cSW3_ON();		// switch clear
+		vLCD_lines_init();
+		vLCD_blinkOFF();
+		xsprintf(LL1.bLineBuffer, "Menu");
+		uiTMR007 = 50; //msec period
+		LcdMenu12.status++;
+		//break;
+	case	eLcdM12_menuSelect:
+		if(cSW2_ON()) i++;
+		if(cSW3_ON()) i--;
+
+		switch (i){
+		case	0:
+			i = 11;
+			break;
+		case	1:
+			LcdMenu12.jump = eLcdM12_playStart;
+			xsprintf(LL2.bLineBuffer, "Play Music?");	
+			break;
+		case	2:
+			LcdMenu12.jump = eLcdM12_playMusicFromFirst;
+			xsprintf(LL2.bLineBuffer, "Play Music 1st?");	
+			break;
+		case	3:
+			LcdMenu12.jump = eLcdM12_alarmSetup;
+			xsprintf(LL2.bLineBuffer, "Alarm Setup?");	
+			break;
+		case	4:
+			LcdMenu12.jump = eLcdM12_alarmON;
+			xsprintf(LL2.bLineBuffer, "Alarm ON?");	
+			break;
+		case	5:
+			LcdMenu12.jump = eLcdM12_alarmOFF;
+			xsprintf(LL2.bLineBuffer, "Alarm OFF?");
+			break;
+		case	6:
+			LcdMenu12.jump = eLcdM12_chimeON;
+			xsprintf(LL2.bLineBuffer, "Chame ON?");
+			break;
+		case	7:
+			LcdMenu12.jump = eLcdM12_chimeOFF;
+			xsprintf(LL2.bLineBuffer, "Chame OFF?");
+			break;
+		case	8:
+			LcdMenu12.jump = eLcdM12_nightSenseON;
+			xsprintf(LL2.bLineBuffer, "Night Sense ON?");
+			break;
+		case	9:
+			LcdMenu12.jump = eLcdM12_nightSenseOFF;
+			xsprintf(LL2.bLineBuffer, "Night Sense OFF?");
+			break;
+		case	10:
+			LcdMenu12.jump = eLcdM12_dateSetup;
+			xsprintf(LL2.bLineBuffer, "Date Setup?");	
+			break;
+		case	11:
+			LcdMenu12.jump = eLcdM12_timeSetup;
+			xsprintf(LL2.bLineBuffer, "Time Setup?");
+			break;
+			
+		default:
+			i = 1;
+			break;
+		}
+		iLCD_scroll_line(&LL1);
+		iLCD_scroll_line(&LL2);
+		uiTMR007 = 50; //msec period
+		break;
+		
+	case	eLcdM12_menuSelectJump:
+		LcdMenu12.status = LcdMenu12.jump;
+		break;
+
+	case	eLcdM12_menuSelectEndWait:
+		if(i-- == 0){
+			LcdMenu12.status = eLcdM12_idle;
+			uiTMR007 = 2000; //msec period
+			break;
+		}
+		iLCD_scroll_line(&LL1);
+		iLCD_scroll_line(&LL2);
+		uiTMR007 = 700; //msec period
+		break;
+
+	case	eLcdM12_playMusicFromFirst:
+			waveMusic13.fnumber = 1; 
+			LcdMenu12.status++;					//to next status
+			break;
+		case	eLcdM12_playStart:
+			vLCD_lines_init();
+			xsprintf(LL1.bLineBuffer, "Play Music <<<<< ");	
+//			iLCD_scroll_line(&LL1);
+			vWAVE_music13_open(waveMusic13.fnumber, "/music");
+			xsprintf(LL2.bLineBuffer, "%d/%d", waveMusic13.fnumber, waveMusic13.maxFnumber);
+			uiTMR007 = 100; //msec period
+			LcdMenu12.status++;					//to next status
+			break;
+			
+		case	eLcdM12_playing:
+			if(cSW2_ON()){
+				waveMusic13.fnumber++;
+				LcdMenu12.status = eLcdM12_playStart;
+				uiTMR007 = 100; //msec period
+				break;
+			}
+			if(cSW3_ON()){
+				waveMusic13.fnumber--;
+				if(waveMusic13.fnumber == 0) waveMusic13.fnumber = waveMusic13.maxFnumber;
+				LcdMenu12.status = eLcdM12_playStart;
+				uiTMR007 = 100; //msec period
+				break;
+			}
+			if(waveMusic13.status == eWaveM13_idle){
+				LcdMenu12.status++;					//to next status
+				break;
+			}
+			xsprintf(LL2.bLineBuffer, "%d/%d %s ", waveMusic13.fnumber, waveMusic13.maxFnumber, waveTask11.fileNames);
+			iLCD_scroll_line(&LL2);
+			iLCD_scroll_line(&LL1);
+			uiTMR007 = 800; //msec period
+			break;
+			
+		case	eLcdM12_playStop:
+			waveTask11.status = eWaveT11_idle;
+			waveMusic13.status = eWaveM13_idle;
+			vWAVE_close();
+			xsprintf(LL1.bLineBuffer, "Play Stop!!");	
+			iLCD_scroll_line(&LL1);
+			uiTMR007 = 2000; //msec period
+			LcdMenu12.status = eLcdM12_idle;
+			break;
+
+	case	eLcdM12_alarmON:
+		cFlagAlarmON = vFLAG_ON;
+		xsprintf(LL1.bLineBuffer, "Alarm ON");
+		iLCD_scroll_line(&LL1);
+		uiTMR007 = 2000; //msec period
+		LcdMenu12.status = eLcdM12_menuSelectEndWait;
+		i = 0;
+		break;
+	case	eLcdM12_alarmOFF:
+		cFlagAlarmON = vFLAG_OFF;
+		xsprintf(LL1.bLineBuffer, "Alarm OFF");
+		iLCD_scroll_line(&LL1);
+		uiTMR007 = 2000; //msec period
+		LcdMenu12.status = eLcdM12_menuSelectEndWait;
+		i = 0;
+		break;
+	case	eLcdM12_chimeON:
+		cFlagChimeON = vFLAG_ON;
+		xsprintf(LL1.bLineBuffer, "Chime ON");
+		iLCD_scroll_line(&LL1);
+		uiTMR007 = 2000; //msec period
+		LcdMenu12.status = eLcdM12_menuSelectEndWait;
+		i = 0;
+		break;
+	case	eLcdM12_chimeOFF:
+		cFlagChimeON = vFLAG_OFF;
+		xsprintf(LL1.bLineBuffer, "Chime OFF");
+		iLCD_scroll_line(&LL1);
+		uiTMR007 = 2000; //msec period
+		LcdMenu12.status = eLcdM12_menuSelectEndWait;
+		i = 0;
+		break;
+	case	eLcdM12_nightSenseON:
+		cFlagNightSenseON = vFLAG_ON;
+		xsprintf(LL1.bLineBuffer, "Night Sense ON. Don't speak in the dark.");
+		iLCD_scroll_line(&LL1);
+		uiTMR007 = 2000; //msec period
+		LcdMenu12.status = eLcdM12_menuSelectEndWait;
+		i = 22;
+		break;
+	case	eLcdM12_nightSenseOFF:
+		cFlagNightSenseON = vFLAG_OFF;
+		xsprintf(LL1.bLineBuffer, "Night Sense OFF. Speak even in the dark.");
+		iLCD_scroll_line(&LL1);
+		uiTMR007 = 2000; //msec period
+		LcdMenu12.status = eLcdM12_menuSelectEndWait;
+		i = 22;
+		break;
+
+	case	eLcdM12_timeSetup:
+		vLCD_lines_init();
+		RTCC_TimeGet(&setupTime);
+		xsprintf(LL1.bLineBuffer, "Seting Time");
+		iLCD_scroll_line(&LL1);
+		LcdMenu12.status++;
+		break;
+		
+		case	eLcdM12_timeHHsetup:
+			setupTime.tm_hour = iAddNumber(setupTime.tm_hour, cSW2_ON(), 0, 23);
+			setupTime.tm_hour = iSubNumber(setupTime.tm_hour, cSW3_ON(), 0, 23);
+			xsprintf(LL2.bLineBuffer, "Time %02d:%02d:%02d\n", setupTime.tm_hour, setupTime.tm_min, setupTime.tm_sec);
+			iLCD_scroll_line(&LL2);
+	        vLCD_printAt(LCD_LINE2,6);
+			vLCD_blinkON();
+			break;
+		case	eLcdM12_timeMMsetup:
+			setupTime.tm_min = iAddNumber(setupTime.tm_min, cSW2_ON(), 0, 59);
+			setupTime.tm_min = iSubNumber(setupTime.tm_min, cSW3_ON(), 0, 59);
+			xsprintf(LL2.bLineBuffer, "Time %02d:%02d:%02d\n", setupTime.tm_hour, setupTime.tm_min, setupTime.tm_sec);
+			iLCD_scroll_line(&LL2);
+	        vLCD_printAt(LCD_LINE2,9);
+			vLCD_blinkON();
+			break;
+		case	eLcdM12_timeSSsetup:
+			setupTime.tm_sec = iAddNumber(setupTime.tm_sec, cSW2_ON(), 0, 59);
+			setupTime.tm_sec = iSubNumber(setupTime.tm_sec, cSW3_ON(), 0, 59);
+			xsprintf(LL2.bLineBuffer, "Time %02d:%02d:%02d\n", setupTime.tm_hour, setupTime.tm_min, setupTime.tm_sec);
+			iLCD_scroll_line(&LL2);
+	        vLCD_printAt(LCD_LINE2,12);
+			vLCD_blinkON();
+			break;
+		case	eLcdM12_timeSetupEnd:
+			RTCC_TimeGet(&currentTime);
+			currentTime.tm_hour = setupTime.tm_hour;
+			currentTime.tm_min  = setupTime.tm_min;
+			currentTime.tm_sec  = setupTime.tm_sec;
+			RTCC_TimeSet(&currentTime);			//日付時間をRTCCモジュールに設定する
+			xsprintf(LL1.bLineBuffer, "Time Setted UP!!");
+			iLCD_scroll_line(&LL1);
+			vLCD_blinkOFF();
+			uiTMR007 = 2000; //msec period
+			LcdMenu12.status = eLcdM12_idle;
+			break;
+
+	case	eLcdM12_dateSetup:
+		vLCD_lines_init();
+		RTCC_TimeGet(&setupTime);
+		xsprintf(LL1.bLineBuffer, "Seting Date");
+		iLCD_scroll_line(&LL1);
+		LcdMenu12.status++;
+		break;
+		case	eLcdM12_dateYYsetup:
+			setupTime.tm_year = iAddNumber(setupTime.tm_year, cSW2_ON(), 0, 99);
+			setupTime.tm_year = iSubNumber(setupTime.tm_year, cSW3_ON(), 0, 99);
+			xsprintf(LL2.bLineBuffer, "Date %02d/%02d/%02d\n", setupTime.tm_year, setupTime.tm_mon, setupTime.tm_mday);
+			iLCD_scroll_line(&LL2);
+	        vLCD_printAt(LCD_LINE2,6);
+			vLCD_blinkON();
+			break;
+		case	eLcdM12_dateMMsetup:
+			setupTime.tm_mon = iAddNumber(setupTime.tm_mon, cSW2_ON(), 1, 12);
+			setupTime.tm_mon = iSubNumber(setupTime.tm_mon, cSW3_ON(), 1, 12);
+			xsprintf(LL2.bLineBuffer, "Date %02d/%02d/%02d\n", setupTime.tm_year, setupTime.tm_mon, setupTime.tm_mday);
+			iLCD_scroll_line(&LL2);
+	        vLCD_printAt(LCD_LINE2,9);
+			vLCD_blinkON();
+			break;
+		case	eLcdM12_dateDDsetup:
+			if(setupTime.tm_mon == 2 && setupTime.tm_year % 4 > 0){
+				setupTime.tm_mday = iAddNumber(setupTime.tm_mday, cSW2_ON(), 1, 28); 
+				setupTime.tm_mday = iSubNumber(setupTime.tm_mday, cSW3_ON(), 1, 28);
+			} else {
+				setupTime.tm_mday = iAddNumber(setupTime.tm_mday, cSW2_ON(), 1, check_date[setupTime.tm_mon]);
+				setupTime.tm_mday = iSubNumber(setupTime.tm_mday, cSW3_ON(), 1, check_date[setupTime.tm_mon]);
+			}
+			xsprintf(LL2.bLineBuffer, "Date %02d/%02d/%02d\n", setupTime.tm_year, setupTime.tm_mon, setupTime.tm_mday);
+			iLCD_scroll_line(&LL2);
+	        vLCD_printAt(LCD_LINE2,12);
+			vLCD_blinkON();
+			break;
+		case	eLcdM12_dateSetupEnd:
+			RTCC_TimeGet(&currentTime);
+			currentTime.tm_year = setupTime.tm_year;
+			currentTime.tm_mon  = setupTime.tm_mon;
+			currentTime.tm_mday = setupTime.tm_mday;
+			RTCC_TimeSet(&currentTime);			//日付時間をRTCCモジュールに設定する
+			xsprintf(LL1.bLineBuffer, "Date Setted UP!!");
+			iLCD_scroll_line(&LL1);
+			vLCD_blinkOFF();
+			uiTMR007 = 2000; //msec period
+			LcdMenu12.status = eLcdM12_idle;
+			break;
+
+	case	eLcdM12_alarmSetup:
+		vLCD_lines_init();
+		RTCC_TimeGet(&alarmTime);
+		xsprintf(LL1.bLineBuffer, "Seting Alarm");
+		iLCD_scroll_line(&LL1);
+		LcdMenu12.status++;
+		break;
+		
+		case	eLcdM12_alarmHHsetup:
+			alarmTime.tm_hour = iAddNumber(alarmTime.tm_hour, cSW2_ON(), 0, 23);
+			alarmTime.tm_hour = iSubNumber(alarmTime.tm_hour, cSW3_ON(), 0, 23);
+			xsprintf(LL2.bLineBuffer, "Alarm %02d:%02d\n", alarmTime.tm_hour, alarmTime.tm_min);
+			iLCD_scroll_line(&LL2);
+	        vLCD_printAt(LCD_LINE2,7);
+			vLCD_blinkON();
+			break;
+		case	eLcdM12_alarmMMsetup:
+			alarmTime.tm_min = iAddNumber(alarmTime.tm_min, cSW2_ON(), 0, 59);
+			alarmTime.tm_min = iSubNumber(alarmTime.tm_min, cSW3_ON(), 0, 59);
+			xsprintf(LL2.bLineBuffer, "Alarm %02d:%02d\n", alarmTime.tm_hour, alarmTime.tm_min);
+			iLCD_scroll_line(&LL2);
+	        vLCD_printAt(LCD_LINE2,10);
+			vLCD_blinkON();
+			break;
+		case	eLcdM12_alarmRepeat:
+			alarmTime.tm_sec = iAddNumber(alarmTask11.cAlarmRepeat, cSW2_ON(), 1, 100);	
+			alarmTime.tm_sec = iSubNumber(alarmTask11.cAlarmRepeat, cSW3_ON(), 1, 100);
+			xsprintf(LL2.bLineBuffer, "Alarm repeat:%3d\n", alarmTask11.cAlarmRepeat);
+			iLCD_scroll_line(&LL2);
+//	        vLCD_printAt(LCD_LINE2,14);
+			vLCD_blinkOF();
+			break;
+		case	eLcdM12_alarmSetupEnd:
+			alarmTime.tm_hour = setupTime.tm_hour;
+			alarmTime.tm_min  = setupTime.tm_min;
+			alarmTime.tm_sec  = 0;
+			xsprintf(bAlarmTime, "%02d%02d", alarmTime.tm_hour, alarmTime.tm_min);
+			xsprintf(LL1.bLineBuffer, "Alarm Setted UP!!");
+			iLCD_scroll_line(&LL1);
+			xsprintf(LL2.bLineBuffer, "Alarm %02d:%02d\n", alarmTime.tm_hour, alarmTime.tm_min);
+			iLCD_scroll_line(&LL2);
+			vLCD_blinkOFF();
+			uiTMR007 = 2000; //msec period
+			LcdMenu12.status = eLcdM12_idle;
+			break;
+
+	case	eLcdM12_end :
+		LcdMenu12.status = eLcdM12_idle;
+		break;
+
+	default:
+		LcdMenu12.status = eLcdM12_end;
+		break;
+	}
+
+}
+
+
+//******************************************************************************
+//   Add Number and return
+//
+//   Description   : 時刻日付の設定用。
+//                 : 時間・番号を受け取り、指定の範囲で加算して返信する。
+//                 : 時間・番号を加算した結果が、指定範囲を超えていた場合は最小値を返す。
+//   Precondition  :
+//   Input         : iNowNumber:加算する元
+//                 : iAddNumber:加算値
+//                 : iMinNumber:指定の範囲、最小値
+//                 : iMaxNumber:指定の範囲、最大値
+//   Output        : 算出した値
+//******************************************************************************
+int iAddNumber(int iNowNumber, int iAddNumber, int iMinNumber, int iMaxNumber)
+{
+	iNowNumber = iNowNumber + iAddNumber;
+	if(iNowNumber > iMaxNumber){
+		return iMinNumber;
+	}else{
+		return iNowNumber;
+	}
+
+}
+
+//******************************************************************************
+//   Subtract Number and return
+//
+//   Description   : 時刻日付の設定用。
+//                 : 時間・番号を受け取り、指定の範囲で減算して返信する。
+//                 : 時間・番号を減算した結果が、指定範囲を超えていた場合は最大値を返す。
+//   Precondition  :
+//   Input         : iNowNumber:減算する元
+//                 : iAddNumber:減算値
+//                 : iMinNumber:指定の範囲、最小値
+//                 : iMaxNumber:指定の範囲、最大値
+//   Output        : 算出した値
+//******************************************************************************
+int iSubNumber(int iNowNumber, int iSubNumber, int iMinNumber, int iMaxNumber)
+{
+	iNowNumber = iNowNumber - iSubNumber;
+	if(iNowNumber < iMinNumber){
+		return iMaxNumber;
+	}else{
+		return iNowNumber;
+	}
+}
+

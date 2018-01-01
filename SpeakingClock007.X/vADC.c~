@@ -1,0 +1,63 @@
+/*******************************************************************************
+ *	  ADC control
+ *	  author  :hiroshi murakami
+ *	  created :20170405
+ *	  modified:-
+ ******************************************************************************/
+#define _vADC_C
+
+#include "mcc_generated_files/mcc.h"
+//#include "string.h"
+#include "vADC.h"
+
+//******************************************************************************
+// Get a ADC value 
+//******************************************************************************
+void ADC_open (
+	ADC1_CHANNEL channel	
+)
+{
+	//ADC1_ChannelSelect(ADC1_CHANNEL_AN0);
+	ADC1_ChannelSelect(channel);
+	ADCtask11.adcValue = -1;
+	ADCtask11.status = eADC_idle;
+}
+
+//******************************************************************************
+// Get a ADC value 
+//******************************************************************************
+void ADC_task (
+)
+{
+	BYTE d;
+	int i;
+
+	if(IS_uiTMR005_FINISH){
+		uiTMR005 = 2; //msec period
+	} else {
+		return;
+	}
+
+	switch (ADCtask11.status) {
+	case	eADC_idle:
+		break;
+	case	eADC_start:
+        //ADC1_ChannelSelect(ADC1_CHANNEL_AN0);
+		ADC1_Start();
+		ADCtask11.status++;
+		break;
+	case	eADC_stop:
+		ADC1_Stop();
+		ADCtask11.status++;
+		break;
+	case	eADC_display:
+		ADCtask11.adcValue = ADC1_ConversionResultGet();
+		ADCtask11.status = eADC_idle;
+		break;
+	case	eADC_end:
+	default:
+		ADCtask11.status = eADC_idle;
+		break;
+	}
+}
+

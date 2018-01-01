@@ -1,0 +1,44 @@
+/*******************************************************************************
+ *      ADC control
+ *      author  :hiroshi murakami
+ *      created :20170405
+ *      modified:-
+ ******************************************************************************/
+#ifndef _vADC_H
+#define _vADC_H
+
+//#include "integer.h"
+
+/*****************************
+ * VARIABLES
+ *****************************/
+typedef enum {
+	eADC_idle,	
+		eADC_start,
+		eADC_stop,
+		eADC_display,
+		eADC_end
+} ADC_STATUS;
+
+typedef volatile struct {
+	uint32_t	adcValue;
+	ADC_STATUS	status; 
+} ADC_PROPERTY; 
+
+#if defined _vADC_C
+	LCD_MENU12_PROPERTY LcdMenu12;
+	BYTE check_date[13] =
+		  {0,31,29,31,30,31,30,31,31,30,31,30,31};
+		//{0,1 ,2 ,3 ,4 ,5 ,6 ,7 ,8 ,9 ,10,11,12}
+
+#else
+	extern LCD_MENU12_PROPERTY LcdMenu12;
+#endif
+
+/*****************************
+ * PROTOTYPES
+ *****************************/
+void ADC_open(ADC1_CHANNEL channel);
+void ADC_task(void);
+#endif
+

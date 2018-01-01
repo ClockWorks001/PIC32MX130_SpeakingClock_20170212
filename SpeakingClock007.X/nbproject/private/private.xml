@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="27">
+        <file>
+            <url>vUART_MENU.c</url>
+            <bookmark id="20">
+                <name/>
+                <line>110</line>
+                <key/>
+            </bookmark>
+            <bookmark id="21">
+                <name/>
+                <line>203</line>
+                <key/>
+            </bookmark>
+            <bookmark id="22">
+                <name/>
+                <line>1172</line>
+                <key/>
+            </bookmark>
+            <bookmark id="23">
+                <name/>
+                <line>1217</line>
+                <key/>
+            </bookmark>
+        </file>
+        <file>
+            <url>vWAVE.c</url>
+            <bookmark id="3">
+                <name/>
+                <line>136</line>
+                <key/>
+            </bookmark>
+            <bookmark id="2">
+                <name/>
+                <line>202</line>
+                <key/>
+            </bookmark>
+            <bookmark id="9">
+                <name/>
+                <line>451</line>
+                <key/>
+            </bookmark>
+        </file>
+        <file>
+            <url>vLCD_MENU.c</url>
+            <bookmark id="11">
+                <name/>
+                <line>51</line>
+                <key/>
+            </bookmark>
+            <bookmark id="18">
+                <name/>
+                <line>116</line>
+                <key/>
+            </bookmark>
+            <bookmark id="27">
+                <name/>
+                <line>290</line>
+                <key/>
+            </bookmark>
+            <bookmark id="25">
+                <name/>
+                <line>296</line>
+                <key/>
+            </bookmark>
+            <bookmark id="7">
+                <name/>
+                <line>323</line>
+                <key/>
+            </bookmark>
+            <bookmark id="24">
+                <name/>
+                <line>404</line>
+                <key/>
+            </bookmark>
+            <bookmark id="19">
+                <name/>
+                <line>537</line>
+                <key/>
+            </bookmark>
+        </file>
+        <file>
+            <url>vLCD_I2C.c</url>
+            <bookmark id="6">
+                <name/>
+                <line>229</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/mura01/Google%20ドライブ/PIC32MX/20170212_SpeakingClock_PIC32MX130/SpeakingClock007.X/main.c</file>
+        </group>
+    </open-files>
+</project-private>
